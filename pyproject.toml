@@ -1,0 +1,58 @@
+[project]
+name = "born-field"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "imadelmakaoui-UJ", email = "imad.elmakaoui@uir.ac.ma" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4.6",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "structlog>=26.1.0",
+]
+
+[project.scripts]
+born-field = "born_field:main"
+
+[project.optional-dependencies]
+geo = [
+    "geopandas>=1.1.4",
+    "pandas>=3.0.5",
+    "pyproj>=3.7.2",
+    "shapely>=2.1.2",
+]
+model = [
+    "matplotlib>=3.11.1",
+    "mlflow>=1.27.0",
+    "scikit-learn>=1.9.0",
+    "statsmodels>=0.14.6",
+]
+serve = [
+    "fastapi>=0.141.1",
+    "geoalchemy2>=0.20.0",
+    "prometheus-client>=0.26.0",
+    "psycopg[binary]>=3.3.4",
+    "sqlalchemy>=2.0.51",
+    "uvicorn[standard]>=0.52.1",
+]
+agent = [
+    "anthropic>=0.120.2",
+    "langfuse>=4.14.2",
+    "langgraph>=1.2.10",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.165.1",
+    "mypy>=2.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.1",
+]
