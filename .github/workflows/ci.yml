@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Never let a network hiccup masquerade as a code failure.
+  UV_FROZEN: "1"
+
+jobs:
+  check:
+    name: lint / type / test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      # Extras are promoted here as each build stage lands, so a resolution
+      # failure surfaces one layer at a time rather than as a wall on day one.
+      - name: Sync dependencies
+        run: uv sync --extra geo --extra model --extra serve --extra agent --dev
+
+      - name: Lint
+        run: |
+          uv run ruff check src tests
+          uv run ruff format --check src tests
+
+      - name: Type check
+        run: uv run mypy
+
+      - name: Test
+        run: uv run pytest --cov=born_field --cov-report=term-missing --cov-report=xml
+
+      # The agent golden set is a gate, not a report. It runs without an API
+      # key: it asserts graph routing and that no untraceable figure survives
+      # verification, which are the properties that must hold regardless of
+      # which explainer is configured.
+      - name: Agent golden-set evals
+        run: uv run python scripts/run_agent_evals.py
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: error
+
+  docker:
+    name: build container image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: born-field:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Verify the image starts and becomes healthy
+        run: |
+          docker run -d --name bornfield -p 8000:8000 born-field:ci
+          # The demo model is fitted at startup, so readiness is not immediate.
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/health | grep -q '"model_loaded":true'; then
+              echo "ready after ${i}0s"; break
+            fi
+            sleep 10
+          done
+          curl -fsS http://localhost:8000/health | grep -q '"model_loaded":true'
+          curl -fsS -X POST http://localhost:8000/v1/score \
+            -H 'Content-Type: application/json' -H 'X-API-Key: ci' \
+            -d '{"lat":40.7128,"lon":-74.0060,"timestamp":"2026-01-15T08:00:00Z"}' \
+            | grep -q '"outcome":"refusal"'
+          docker logs bornfield | tail -20
+
+  build:
+    name: build wheel
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build
+      - name: Verify the wheel imports cleanly
+        run: |
+          uv venv /tmp/verify
+          VIRTUAL_ENV=/tmp/verify uv pip install dist/*.whl
+          /tmp/verify/bin/python -c "import born_field; print(born_field.__version__)"
+          /tmp/verify/bin/bornfield --version
