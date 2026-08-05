@@ -83,8 +83,8 @@ class TestTimeWindow:
             TimeWindow(start=now, end=now)
 
         def test_rejects_naive_datetimes(self):
-        naive = datetime(2026, 1, 1)  # noqa: DTZ001 - intentionally naive: that is the point
-        with pytest.raises(ValidationError):
+            naive = datetime(2026, 1, 1)  # noqa: DTZ001 - intentionally naive: that is the point
+            with pytest.raises(ValidationError):
             TimeWindow(start=naive, end=naive + timedelta(hours=1))
 
     def test_hours(self):
