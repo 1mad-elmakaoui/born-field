@@ -1,15 +1,4 @@
-"""Configuration schema.
-
-Split into three concerns that have genuinely different lifecycles:
-
-* :class:`GridConfig` -- the spatial discretisation. Changing it invalidates
-  every fitted model, because the flow exponent is *not* scale-invariant
-  (the modifiable areal unit problem). Recorded with every MLflow run.
-* :class:`GeneratorConfig` -- the **ground truth** of the synthetic world.
-  This is the answer key for the recovery experiment. Nothing downstream of
-  the generator is permitted to read it.
-* :class:`Settings` -- deployment/runtime knobs, environment-driven.
-"""
+"""Configuration schema."""
 
 from __future__ import annotations
 
@@ -57,23 +46,7 @@ class GridConfig(BaseModel):
 
 
 class GeneratorConfig(BaseModel):
-    """Ground truth for the synthetic world.
-
-    The generator samples collision counts as::
-
-        E[N] = k * flow**alpha * class_mult * weather_mult * tod_mult * road_miles * hours
-        N    ~ Poisson(E[N])
-
-    Note that ``road_miles * hours`` enters linearly and ``flow`` enters with
-    exponent ``alpha``. Under the fitted model's ``offset = log(VMT)`` --
-    which absorbs ``flow * road_miles * hours`` -- the recoverable coefficient
-    on ``log(flow)`` is therefore ``alpha - 1``.
-
-    ``alpha`` is the hypothesis under test. Born's exponent of 2 is the origin
-    of the framing, not a prediction: a recovered interval covering 1.0 would
-    mean the intensity field contributes nothing beyond exposure, and that is a
-    reportable result rather than a failure to hide.
-    """
+    """Ground truth for the synthetic world."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -101,14 +74,7 @@ class GeneratorConfig(BaseModel):
 
 
 class CorruptionConfig(BaseModel):
-    """Controlled misspecification applied *after* sampling.
-
-    The clean recovery of ``alpha`` from an uncorrupted sample is guaranteed by
-    maximum-likelihood consistency -- it demonstrates that statsmodels works,
-    not that the pipeline does. The reportable result is how recovery degrades
-    under the failure modes real data actually exhibits. Each field below is
-    one such regime; all default to off so the clean case is the control.
-    """
+    """Controlled misspecification applied *after* sampling."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -160,7 +126,6 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://bornfield:bornfield@localhost:5432/bornfield"
     # SQLite, not a file store: MLflow has put the filesystem backend into
     # maintenance mode and it now raises rather than degrading. SQLite keeps
-    # the zero-credentials property while remaining a supported backend.
     mlflow_tracking_uri: str = "sqlite:///mlflow.db"
 
     grid: GridConfig = Field(default_factory=GridConfig)

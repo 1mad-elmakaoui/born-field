@@ -1,16 +1,4 @@
-"""Structured logging setup.
-
-Console-rendered and human-readable by default; JSON when ``BORNFIELD_LOG_JSON``
-is set, which is what the container images use. Log events carry the fields a
-risk service is actually asked about after the fact -- model version, cell id,
-whether the request was refused -- so that "why did this cell score high on
-Tuesday" is answerable from logs rather than by re-running the model.
-
-**All log output goes to stderr.** structlog's default factory prints to stdout,
-which would interleave diagnostics with the CLI's machine-readable output and
-break ``bornfield config --json | jq``. stdout carries data, stderr carries
-diagnostics.
-"""
+"""Structured logging setup."""
 
 from __future__ import annotations
 
@@ -23,14 +11,7 @@ _configured = False
 
 
 class _LazyStderr:
-    """Resolves ``sys.stderr`` at write time rather than at configure time.
-
-    ``PrintLoggerFactory(file=sys.stderr)`` binds the stream object once, so any
-    later reassignment of ``sys.stderr`` -- by a process supervisor, a
-    daemonising wrapper, or pytest's capture -- leaves the logger writing to a
-    handle that may be closed. Deferring the lookup costs one attribute access
-    per record and removes that whole class of failure.
-    """
+    """Resolves ``sys.stderr`` at write time rather than at configure time."""
 
     def write(self, message: str) -> int:
         """Write to whatever ``sys.stderr`` currently is."""

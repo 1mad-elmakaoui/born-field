@@ -1,9 +1,4 @@
-"""Command-line entry point.
-
-argparse rather than Typer or Click: the CLI is an operator surface for a
-handful of pipeline stages, not a product in itself, and the stdlib covers it
-without adding a dependency. Revisit if subcommand count exceeds ~8.
-"""
+"""Command-line entry point."""
 
 from __future__ import annotations
 

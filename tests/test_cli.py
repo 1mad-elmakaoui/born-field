@@ -1,8 +1,4 @@
-"""CLI and logging setup.
-
-Thin surfaces, but both are how an operator interacts with the pipeline, and a
-config command that crashes is worse than no config command.
-"""
+"""CLI and logging setup."""
 
 from __future__ import annotations
 
@@ -49,11 +45,7 @@ def test_configure_logging_is_idempotent():
 
 
 def test_logger_emits_bound_context():
-    """Context bound at construction must survive to the emitted event.
-
-    This is what makes "why did this cell score high on Tuesday" answerable
-    from logs rather than by re-running the model.
-    """
+    """Context bound at construction must survive to the emitted event."""
     with capture_logs() as events:
         get_logger("test", cell_id="abc", model_version="0.1.0").info("scored")
 

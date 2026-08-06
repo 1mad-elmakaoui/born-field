@@ -1,10 +1,4 @@
-"""The hazard-model extension point.
-
-Same reasoning as the adapter Protocol: a buyer swaps the model without
-touching validation or serving. The evaluation harness in Stage 2 is written
-against this interface, so a baseline and the production model are scored by
-identical code -- which is the only way a baseline comparison means anything.
-"""
+"""The hazard-model extension point."""
 
 from __future__ import annotations
 
@@ -26,13 +20,7 @@ from born_field.types import (
 
 
 class HazardSample(Frozen):
-    """One cell-window row of the fitting table.
-
-    ``exposure_vehicle_miles`` is mandatory and separate from ``flow_veh_per_hour``
-    even though one is derived from the other, because they play different roles:
-    the former is the Poisson offset (coefficient fixed at 1), the latter is a
-    covariate whose coefficient is the quantity of scientific interest.
-    """
+    """One cell-window row of the fitting table."""
 
     cell_id: str
     window: TimeWindow
@@ -61,19 +49,7 @@ REQUIRED_PANEL_COLUMNS: Final[tuple[str, ...]] = (
 
 @dataclass(frozen=True)
 class HazardPanel:
-    """A validated training table: the unit models are fitted on.
-
-    :class:`HazardSample` is the right shape for scoring one cell-window
-    through the API, but the wrong shape for fitting: the recovery experiment
-    fits hundreds of models over panels of ~10^6 rows, and constructing that
-    many validated objects per fit would dominate its runtime while proving
-    nothing extra.
-
-    So validation moves from per-row to per-panel. The schema is checked once,
-    on construction, and every model then works against columnar data. This is
-    the same trade every production feature store makes, and it keeps the type
-    system meaningful without paying per-row for it.
-    """
+    """A validated training table: the unit models are fitted on."""
 
     data: pd.DataFrame
 
@@ -144,11 +120,7 @@ class HazardPanel:
 
 
 class FitDiagnostics(Frozen):
-    """What a fit reports about itself, for MLflow and for refusing to serve.
-
-    ``converged`` is not cosmetic: a non-converged GLM will still happily emit
-    predictions, and serving from one is worse than refusing.
-    """
+    """What a fit reports about itself, for MLflow and for refusing to serve."""
 
     converged: bool
     n_observations: int
@@ -167,17 +139,7 @@ class FitDiagnostics(Frozen):
 
 @runtime_checkable
 class HazardModel(Protocol):
-    """Fits a collision-hazard model and emits calibrated estimates.
-
-    Implementations must honour two invariants:
-
-    1. **Exposure is an offset, not a feature.** ``log(exposure_vehicle_miles)``
-       enters with its coefficient fixed at 1. A model that estimates a free
-       coefficient on exposure is modelling counts, not risk, and will rank
-       busy roads as dangerous roads.
-    2. **Every estimate carries an interval.** Point estimates without
-       uncertainty cannot be priced against and must not be returned.
-    """
+    """Fits a collision-hazard model and emits calibrated estimates."""
 
     @property
     def name(self) -> str:
@@ -198,11 +160,5 @@ class HazardModel(Protocol):
         ...
 
     def expected_counts(self, panel: HazardPanel) -> npt.NDArray[np.float64]:
-        """Expected crash counts, for deviance and calibration scoring.
-
-        Kept separate from :meth:`predict` so the evaluation harness can score
-        the mean function without paying for interval construction on every row.
-        Every baseline and every candidate model is scored through this one
-        method, which is what makes a baseline comparison mean anything.
-        """
+        """Expected crash counts, for deviance and calibration scoring."""
         ...

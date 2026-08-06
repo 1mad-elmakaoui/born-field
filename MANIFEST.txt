@@ -1,0 +1,33 @@
+stage0-scaffold
+===============
+
+NEW FILES
+  pyproject.toml
+  README.md
+  LICENSE
+  .gitignore
+  .python-version
+  .env.example
+  Makefile
+  ARCHITECTURE.md
+  .github/workflows/ci.yml
+  src/born_field/__init__.py
+  src/born_field/py.typed
+  src/born_field/types.py
+  src/born_field/config.py
+  src/born_field/logging.py
+  src/born_field/cli.py
+  src/born_field/adapters/__init__.py
+  src/born_field/adapters/base.py
+  src/born_field/models/__init__.py
+  src/born_field/models/base.py
+  src/born_field/field/__init__.py
+  src/born_field/evaluation/__init__.py
+  src/born_field/experiments/__init__.py
+  src/born_field/api/__init__.py
+  src/born_field/agent/__init__.py
+  src/born_field/db/__init__.py
+  tests/__init__.py
+  tests/test_scaffold.py
+  tests/test_cli.py
+  uv.lock

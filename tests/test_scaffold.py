@@ -1,10 +1,4 @@
-"""Stage 0 smoke tests.
-
-Deliberately not ``assert True``. These pin the two things Stage 0 actually
-claims: that the exposure denominator is computed correctly, and that the
-domain types reject invalid states rather than propagating them into a model.
-The heavy property tests for the generator arrive in Stage 1.
-"""
+"""Smoke tests for the domain types, exposure maths and config."""
 
 from __future__ import annotations
 
@@ -57,12 +51,7 @@ class TestExposure:
         scale=st.floats(min_value=1e-3, max_value=1e3, allow_nan=False),
     )
     def test_linear_in_flow(self, flow, miles, hours, scale):
-        """Exposure must be exactly linear in flow.
-
-        This is the property that makes ``offset = log(VMT)`` meaningful: any
-        nonlinearity in the *offset* would be indistinguishable from the flow
-        exponent the model is trying to estimate.
-        """
+        """Exposure must be exactly linear in flow."""
         assert vehicle_miles_travelled(flow * scale, miles, hours) == pytest.approx(
             scale * vehicle_miles_travelled(flow, miles, hours)
         )
@@ -82,10 +71,10 @@ class TestTimeWindow:
         with pytest.raises(ValidationError):
             TimeWindow(start=now, end=now)
 
-        def test_rejects_naive_datetimes(self):
-            naive = datetime(2026, 1, 1)  # noqa: DTZ001 - intentionally naive: that is the point
-            with pytest.raises(ValidationError):
-                TimeWindow(start=naive, end=naive + timedelta(hours=1))
+    def test_rejects_naive_datetimes(self):
+        naive = datetime(2026, 1, 1)  # intentionally naive: that is the point
+        with pytest.raises(ValidationError):
+            TimeWindow(start=naive, end=naive + timedelta(hours=1))
 
     def test_hours(self):
         start = datetime(2026, 1, 1, tzinfo=UTC)
@@ -109,12 +98,7 @@ class TestConfig:
         assert set(multipliers) == set(RoadClass)
 
     def test_motorways_are_safer_per_vehicle_mile(self):
-        """Encodes the exposure confound in the ground truth itself.
-
-        Motorways carry the most traffic and the most crashes, but fewer
-        crashes *per vehicle-mile*. A model that ranks them most dangerous has
-        recovered exposure, not risk.
-        """
+        """Encodes the exposure confound in the ground truth itself."""
         multipliers = GeneratorConfig().class_multipliers
         assert multipliers[RoadClass.MOTORWAY] < multipliers[RoadClass.RESIDENTIAL]
 
