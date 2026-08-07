@@ -1,20 +1,17 @@
-stage1-generator
+stage2-baselines
 ================
 
 NEW FILES
-  src/born_field/field/network.py
-  src/born_field/field/grid.py
-  src/born_field/adapters/synthetic.py
-  scripts/build_fixture.py
-  scripts/fetch_osm_extract.py
-  tests/test_generator.py
-  data/fixtures/study_area_roads.parquet
+  src/born_field/evaluation/splits.py
+  src/born_field/evaluation/metrics.py
+  src/born_field/evaluation/harness.py
+  src/born_field/models/baselines.py
+  tests/conftest.py
+  tests/test_evaluation.py
 
 REPLACE EXISTING
   src/born_field/types.py
-  src/born_field/adapters/base.py
-  src/born_field/adapters/__init__.py
-  src/born_field/field/__init__.py
+  src/born_field/models/base.py
+  src/born_field/models/__init__.py
+  src/born_field/evaluation/__init__.py
   pyproject.toml
-  .github/workflows/ci.yml
-  uv.lock
