@@ -1,17 +1,17 @@
-stage2-baselines
-================
+stage3-model
+============
 
 NEW FILES
-  src/born_field/evaluation/splits.py
-  src/born_field/evaluation/metrics.py
-  src/born_field/evaluation/harness.py
-  src/born_field/models/baselines.py
-  tests/conftest.py
-  tests/test_evaluation.py
+  src/born_field/models/glm.py
+  src/born_field/experiments/recovery.py
+  src/born_field/experiments/tracking.py
+  tests/test_hazard_model.py
+  experiments/alpha_recovery_regimes.png
+  experiments/alpha_recovery_sweep.png
+  experiments/regime_sweep.parquet
+  experiments/alpha_sweep.parquet
 
 REPLACE EXISTING
-  src/born_field/types.py
-  src/born_field/models/base.py
   src/born_field/models/__init__.py
-  src/born_field/evaluation/__init__.py
-  pyproject.toml
+  src/born_field/models/baselines.py
+  src/born_field/config.py
