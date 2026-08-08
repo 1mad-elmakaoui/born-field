@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "Born Field",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}

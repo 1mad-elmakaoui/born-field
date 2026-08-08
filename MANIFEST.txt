@@ -1,17 +1,27 @@
-stage3-model
-============
+stage4-api-db
+=============
 
 NEW FILES
-  src/born_field/models/glm.py
-  src/born_field/experiments/recovery.py
-  src/born_field/experiments/tracking.py
-  tests/test_hazard_model.py
-  experiments/alpha_recovery_regimes.png
-  experiments/alpha_recovery_sweep.png
-  experiments/regime_sweep.parquet
-  experiments/alpha_sweep.parquet
+  src/born_field/api/service.py
+  src/born_field/api/schemas.py
+  src/born_field/api/main.py
+  src/born_field/db/models.py
+  src/born_field/db/session.py
+  src/born_field/db/repository.py
+  tests/test_api.py
+  Dockerfile
+  docker-compose.yml
+  bruno/bruno.json
+  bruno/collection.bru
+  bruno/01-health.bru
+  bruno/02-model-info.bru
+  bruno/03-score.bru
+  bruno/04-score-refusal.bru
+  bruno/05-calibration.bru
+  bruno/06-unauthenticated.bru
 
 REPLACE EXISTING
-  src/born_field/models/__init__.py
-  src/born_field/models/baselines.py
-  src/born_field/config.py
+  src/born_field/api/__init__.py
+  src/born_field/cli.py
+  pyproject.toml
+  .github/workflows/ci.yml

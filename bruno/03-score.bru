@@ -1,0 +1,34 @@
+meta {
+  name: Score a point (estimate)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/v1/score
+  body: json
+}
+
+headers {
+  X-API-Key: demo-key
+}
+
+body:json {
+  {
+    "lat": 37.8200,
+    "lon": -122.2600,
+    "timestamp": "2026-01-15T08:00:00Z",
+    "is_wet": false
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.outcome: eq estimate
+}
+
+docs {
+  Returns a calibrated rate per 100M vehicle-miles with an interval. Note the
+  interval is asymmetric: it is propagated through the log link, not a normal
+  approximation on the count scale.
+}

@@ -1,0 +1,14 @@
+meta {
+  name: Health
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/health
+}
+
+assert {
+  res.status: eq 200
+  res.body.model_loaded: eq true
+}

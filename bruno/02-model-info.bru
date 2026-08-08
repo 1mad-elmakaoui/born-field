@@ -1,0 +1,19 @@
+meta {
+  name: Model info and support
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/v1/model
+}
+
+headers {
+  X-API-Key: demo-key
+}
+
+docs {
+  Publishes the fitted flow exponent and the support boundary, so a client can
+  avoid sending queries that will be refused instead of discovering the edge by
+  trial and error.
+}

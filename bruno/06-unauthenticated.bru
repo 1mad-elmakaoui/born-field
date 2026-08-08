@@ -1,0 +1,22 @@
+meta {
+  name: Missing API key (401)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/v1/score
+  body: json
+}
+
+body:json {
+  {
+    "lat": 37.8200,
+    "lon": -122.2600,
+    "timestamp": "2026-01-15T08:00:00Z"
+  }
+}
+
+assert {
+  res.status: eq 401
+}

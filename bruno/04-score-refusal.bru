@@ -1,0 +1,34 @@
+meta {
+  name: Score outside the region (refusal)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/v1/score
+  body: json
+}
+
+headers {
+  X-API-Key: demo-key
+}
+
+body:json {
+  {
+    "lat": 40.7128,
+    "lon": -74.0060,
+    "timestamp": "2026-01-15T08:00:00Z"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.outcome: eq refusal
+  res.body.reason: eq outside_fitted_region
+}
+
+docs {
+  New York, far outside the fitted Bay Area study region. Returns HTTP 200 with
+  outcome=refusal: declining is a real answer the service computed, not a client
+  error to be retried.
+}

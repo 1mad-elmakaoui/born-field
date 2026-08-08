@@ -1,0 +1,19 @@
+meta {
+  name: Calibration report
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/v1/calibration
+}
+
+headers {
+  X-API-Key: demo-key
+}
+
+docs {
+  Reliability of the deployed model on its forward-in-time holdout. The endpoint
+  an actuarial team looks at first, because a score no one can price against is
+  worthless.
+}

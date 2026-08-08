@@ -1,0 +1,35 @@
+# The whole topology. Two services and a volume -- which is exactly why this is
+# compose and not Kubernetes (see ARCHITECTURE.md, "deliberately out of scope").
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: bornfield
+      POSTGRES_PASSWORD: bornfield
+      POSTGRES_DB: bornfield
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # pg_isready, not a TCP check: Postgres accepts connections several
+      # seconds before it will actually answer a query.
+      test: ["CMD-SHELL", "pg_isready -U bornfield -d bornfield"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      BORNFIELD_DATABASE_URL: postgresql+psycopg://bornfield:bornfield@db:5432/bornfield
+      BORNFIELD_MLFLOW_TRACKING_URI: sqlite:////app/mlflow.db
+      BORNFIELD_LOG_JSON: "true"
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
