@@ -1,16 +1,14 @@
-stage5-agent
-============
+stage6-docs
+===========
 
 NEW FILES
-  src/born_field/agent/state.py
-  src/born_field/agent/verification.py
-  src/born_field/agent/tools.py
-  src/born_field/agent/graph.py
-  src/born_field/agent/evals.py
-  scripts/run_agent_evals.py
-  tests/test_agent.py
+  MODEL_CARD.md
+  RUNNING.md
+  docs/adapters.md
+  src/born_field/adapters/pems.py
+  src/born_field/adapters/switrs.py
 
 REPLACE EXISTING
-  src/born_field/agent/__init__.py
-  .github/workflows/ci.yml
-  pyproject.toml
+  README.md
+  ARCHITECTURE.md
+  src/born_field/adapters/__init__.py
